@@ -1,28 +1,38 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- Part I: download file -->
+    <DownloadTable v-on:changeDir="onChangeDir" :pleaseRefresh="pleaseRefresh"/>
+    <!-- Part II: upload file -->
+    <UploadFile :uploadDir="currDirPath" v-on:doRefresh="onDoRefresh"/>
+    <!-- Part III: dynamic message box -->
+    <MsgBox></MsgBox>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import DownloadTable from "@/components/DownloadTable";
+import UploadFile from "@/components/UploadFile";
+import MsgBox from "@/components/MsgBox";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    DownloadTable, UploadFile, MsgBox
+  },
+  data() {
+    return {
+      currDirPath: '',
+      // use new Date() as a refresh signal pass from UploadFile to DownLoadTable
+      pleaseRefresh: '',
+    }
+  },
+  methods: {
+    onChangeDir(val) {
+      this.currDirPath = val;
+    },
+    onDoRefresh() {
+      this.pleaseRefresh = new Date();
+    }
+  },
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
