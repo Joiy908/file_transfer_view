@@ -5,6 +5,7 @@
     <button type="button" @click="upload()">Upload</button>
     <br/>
     <div v-if="uploadStatus.isUploading">
+      <el-progress :percentage="uploadStatus.uploadProgress" :status='uploadStatus.barStatus'></el-progress>
       Progress:{{ uploadStatus.uploadProgress }}%<br/>
       Result: {{ uploadStatus.result }}
     </div>
@@ -22,7 +23,8 @@ export default {
       uploadStatus: {
         isUploading: false,
         uploadProgress: 0,
-        result: ''
+        result: '',
+        barStatus: ''
       }
     }
   },
@@ -34,6 +36,10 @@ export default {
   },
   methods: {
     upload() {
+      if (this.uploadStatus.isUploading) {
+        alert('some file is uploading, please try again later.')
+        return;
+      }
       // 1. prepare data
       let fileToUpload = this.$refs.file.files[0];
       if (fileToUpload === undefined) {
@@ -67,14 +73,24 @@ export default {
             console.log(res);
             // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
             this.$emit('doRefresh');
+            // mark progress bar status
+            this.updateProgress.barStatus = "success";
           },
           err => {
             this.uploadStatus.result = err.data;
             console.log(err);
+            // mark progress bar status
+            this.updateProgress.barStatus = "warning";
           });
     },
     updateProgress(progress) {
-      this.uploadStatus.isUploading = true;
+      if (progress == 100) {
+        this.uploadStatus.isUploading =  false;
+        alert("uploaded √!")
+        this.$refs.file = '';
+        return;
+      }
+      this.uploadStatus.isUploading =  true;
       this.uploadStatus.uploadProgress = progress;
     }
   }
