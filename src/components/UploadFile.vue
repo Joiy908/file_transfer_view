@@ -1,7 +1,9 @@
 <template>
   <div>
     <h1>Upload File</h1>
-    <input ref="file" type="file"/><br/>
+    <form ref="myForm">
+      <input ref="file" type="file"/><br/>
+    </form>
     <button type="button" @click="upload()">Upload</button>
     <br/>
     <div v-if="uploadStatus.isUploading">
@@ -85,9 +87,12 @@ export default {
     },
     updateProgress(progress) {
       if (progress == 100) {
+        if (!this.uploadStatus.isUploading) {
+          return;
+        }
         this.uploadStatus.isUploading =  false;
-        alert("uploaded √!")
-        this.$refs.file = '';
+        alert("uploaded √!");
+        this.$refs.myForm.reset();
         return;
       }
       this.uploadStatus.isUploading =  true;
