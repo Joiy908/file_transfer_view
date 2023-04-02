@@ -26,6 +26,7 @@
         <td><a :href="getDownloadUrl(fileName)">
           <button>download</button>
         </a></td>
+        <button @click="deleteFile(fileName)">delete</button>
       </tr>
     </table>
   </div>
@@ -63,7 +64,7 @@ export default {
   },
   methods: {
     getPathTreeObj(path) {
-      axios.post('path', {data:{'dirPath': path}})
+      axios.post('path', {'dirPath': path})
       .then(
           res => {
             console.log('get path ok!:', res.data);
@@ -92,6 +93,21 @@ export default {
     getDownloadUrl(fileName) {
       let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
       return 'download?filePath=' + filePath;
+    },
+    deleteFile(fileName) {
+      let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
+      axios.post('/deleteFile', {'filePath': filePath})
+      .then(
+      res => {
+          console.log('delete file ok!');
+          console.log(res.data);
+          this.refresh();
+      },
+      err => {
+          console.log('delete file err');
+          console.log(err);
+      }
+      );
     },
     refresh() {
       this.getPathTreeObj(this.pathTreeObj.currentDirName);

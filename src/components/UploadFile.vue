@@ -76,7 +76,6 @@ export default {
 
       // 2. write onUploadProgress listener
       const config = {
-        data: data,
         onUploadProgress: (progressEvent) => {
           // use arrowFuc to share the 'this' of Vue
           let totalLength = progressEvent.lengthComputable
@@ -96,7 +95,7 @@ export default {
       }
 
       // 3. make request
-      axios.post(this.uploadUrl, config)
+      axios.post(this.uploadUrl, data, config)
       .then(
           (res) => {
             // use of arrow function

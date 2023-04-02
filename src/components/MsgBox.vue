@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     getMsgs() {
-      axios.get('messages').then(
+      axios.get('/messages').then(
         res => {
           console.log('get massages ok!', res.data);
           this.messages = res.data.messages;
@@ -39,7 +39,7 @@ export default {
     putMsg() {
       let inputMsg = this.$refs.msgInput.value;
       const data = {'msg': inputMsg};
-      axios.post('messages', data).then(
+      axios.post('/messages', data).then(
           res => {
             console.log('post message ok!', res.data);
             this.getMsgs();
