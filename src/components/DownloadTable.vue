@@ -2,6 +2,7 @@
   <div>
     <h1>File to download</h1>
     Current dir: {{ pathTreeObj.currentDirName }}
+    <button @click="refresh()" class="u-right-margin-small">refresh</button>
     <button @click="backToParentDir()">back to parent dir</button>
     <br>
     <table>
@@ -62,14 +63,14 @@ export default {
   },
   methods: {
     getPathTreeObj(path) {
-      let data = {'dirPath': path};
-      axios.post('path', data).then(
-          response => {
-            console.log('request successfully', response.data);
-            this.pathTreeObj = response.data;
+      axios.post('path', {data:{'dirPath': path}})
+      .then(
+          res => {
+            console.log('get path ok!:', res.data);
+            this.pathTreeObj = res.data;
           },
-          error => {
-            console.log('err', error.message);
+          err => {
+            console.log('get path err', err.message);
           }
       );
     },
@@ -95,10 +96,15 @@ export default {
     refresh() {
       this.getPathTreeObj(this.pathTreeObj.currentDirName);
     }
-
   },
   mounted() {
     this.getPathTreeObj(this.ROOT_PATH);
   }
 }
 </script>
+
+<style>
+.u-right-margin-small {
+  margin-right: 1rem;
+}
+</style>

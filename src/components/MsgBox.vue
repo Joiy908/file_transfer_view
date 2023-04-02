@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Message Box</h1>
-    <span>message:</span>
+    <span>messages:</span>
     <button @click="getMsgs()">refresh</button>
     <ul>
       <li v-for="msg in messages" :key="msg">{{ msg }}</li>
@@ -26,26 +26,26 @@ export default {
   methods: {
     getMsgs() {
       axios.get('messages').then(
-          response => {
-            console.log('request successfully', response.data);
-            this.messages = response.data.messages;
-            console.log('@@@', this.messages);
-          },
-          error => {
-            console.log('err', error.message);
-          }
+        res => {
+          console.log('get massages ok!', res.data);
+          this.messages = res.data.messages;
+          console.log('@@@', this.messages);
+        },
+        err => {
+          console.log('get massages err', err.message);
+        }
       );
     },
     putMsg() {
       let inputMsg = this.$refs.msgInput.value;
       const data = {'msg': inputMsg};
       axios.post('messages', data).then(
-          response => {
-            console.log('request successfully', response.data);
+          res => {
+            console.log('post message ok!', res.data);
             this.getMsgs();
           },
-          error => {
-            console.log('err', error.message);
+          err => {
+            console.log('post message err', err.message);
           }
       );
     }

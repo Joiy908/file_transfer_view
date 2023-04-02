@@ -76,6 +76,7 @@ export default {
 
       // 2. write onUploadProgress listener
       const config = {
+        data: data,
         onUploadProgress: (progressEvent) => {
           // use arrowFuc to share the 'this' of Vue
           let totalLength = progressEvent.lengthComputable
@@ -95,14 +96,12 @@ export default {
       }
 
       // 3. make request
-      axios.post(this.uploadUrl, data, config).then(
-      // axios
-      //   .post("http://192.168.0.104:8080/upload?dirPath=./files", data, config)
-      //   .then(
+      axios.post(this.uploadUrl, config)
+      .then(
           (res) => {
             // use of arrow function
             // will make arrowFun share the same this with parentFun
-            // console.log(res);
+            console.log('upload file ok!');
             file.res = res.data;
             // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
             this.$emit("doRefresh");
@@ -110,7 +109,7 @@ export default {
             file.status = "success";
           },
           (err) => {
-            console.log(err);
+            console.log('upload file err', err);
             // mark progress bar status
             file.status = "fail";
             file.res = err;
