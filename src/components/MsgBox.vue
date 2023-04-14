@@ -41,11 +41,11 @@ export default {
       const data = {'msg': inputMsg};
       axios.post('/messages', data).then(
           res => {
-            console.log('post message ok!', res.data);
+            console.log('post message ok! @@@', res.data);
             this.getMsgs();
           },
           err => {
-            console.log('post message err', err.message);
+            console.log('post message err @@@', err.response.data);
           }
       );
     }

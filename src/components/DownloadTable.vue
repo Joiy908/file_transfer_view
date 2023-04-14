@@ -64,14 +64,16 @@ export default {
   },
   methods: {
     getPathTreeObj(path) {
-      axios.post('path', {'dirPath': path})
+      axios.get('path', {
+        params:{'dirPath': path}
+      })
       .then(
           res => {
             console.log('get path ok!:', res.data);
             this.pathTreeObj = res.data;
           },
           err => {
-            console.log('get path err', err.message);
+            console.log('get path err:@@@', err.response.data);
           }
       );
     },
@@ -96,16 +98,16 @@ export default {
     },
     deleteFile(fileName) {
       let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
-      axios.post('/deleteFile', {'filePath': filePath})
+      axios.post('delete', null, {
+        params: {'filePath': filePath}
+      })
       .then(
       res => {
-          console.log('delete file ok!');
-          console.log(res.data);
+          console.log('delete file ok! ', res.data);
           this.refresh();
       },
       err => {
-          console.log('delete file err');
-          console.log(err);
+          console.log('delete file err:@@@', err.response.data);
       }
       );
     },

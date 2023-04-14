@@ -67,6 +67,8 @@ export default {
       }
     },
     post(file) {
+      file.signal = axios.CancelToken.source();
+
       // 1. prepare data
       if (!file) {
         return
@@ -76,6 +78,7 @@ export default {
 
       // 2. write onUploadProgress listener
       const config = {
+        cancelToken: file.signal.token,
         onUploadProgress: (progressEvent) => {
           // use arrowFuc to share the 'this' of Vue
           let totalLength = progressEvent.lengthComputable
@@ -100,24 +103,28 @@ export default {
           (res) => {
             // use of arrow function
             // will make arrowFun share the same this with parentFun
-            console.log('upload file ok!');
-            file.res = res.data;
+            console.log('upload file ok! ', res.data);
             // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
             this.$emit("doRefresh");
             // mark progress bar status
             file.status = "success";
           },
           (err) => {
-            console.log('upload file err', err);
-            // mark progress bar status
-            file.status = "fail";
-            file.res = err;
+            if (axios.isCancel(err)) {
+              console.log('Request canceled:');
+            } else {
+              console.log('upload file err! @@@', err.response.data);
+              // mark progress bar status
+              file.status = "fail";
+              file.res = err;
+            }
           }
         )
     },
     remove(file) {
       // console.log("remove is called")
       // console.log(file.uid);
+      file.signal.cancel('Request canceled by user.');
       let fileList = this.uploadList;
       fileList.splice(fileList.indexOf(file), 1)
     },
