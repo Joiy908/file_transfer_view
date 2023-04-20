@@ -19,11 +19,9 @@
 </template>
 
 <script>
-import axios from "axios"
 
 export default {
   name: "UploadFile",
-  props: ["uploadDir"],
   data() {
     return {
       uploadList: [],
@@ -31,6 +29,9 @@ export default {
     }
   },
   computed: {
+    uploadDir() {
+      return this.$store.state.pathTreeObj.currentDirName; 
+    },
     uploadUrl() {
       // pass path as url parameter
       // return "upload?dirPath=./files"
@@ -67,59 +68,8 @@ export default {
       }
     },
     post(file) {
-      file.signal = axios.CancelToken.source();
-
-      // 1. prepare data
-      if (!file) {
-        return
-      }
-      const data = new FormData()
-      data.append("file", file.raw)
-
-      // 2. write onUploadProgress listener
-      const config = {
-        cancelToken: file.signal.token,
-        onUploadProgress: (progressEvent) => {
-          // use arrowFuc to share the 'this' of Vue
-          let totalLength = progressEvent.lengthComputable
-            ? progressEvent.total
-            : progressEvent.target.getResponseHeader("content-length") ||
-              progressEvent.target.getResponseHeader(
-                "x-decompressed-content-length"
-              )
-          // console.log("onUploadProgress", totalLength);
-          if (totalLength !== null) {
-            file.percentage = Math.round(
-              (progressEvent.loaded * 100) / totalLength
-            )
-            file.status = "uploading"
-          }
-        },
-      }
-
-      // 3. make request
-      axios.post(this.uploadUrl, data, config)
-      .then(
-          (res) => {
-            // use of arrow function
-            // will make arrowFun share the same this with parentFun
-            console.log('upload file ok! ', res.data);
-            // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
-            this.$emit("doRefresh");
-            // mark progress bar status
-            file.status = "success";
-          },
-          (err) => {
-            if (axios.isCancel(err)) {
-              console.log('Request canceled:');
-            } else {
-              console.log('upload file err! @@@', err.response.data);
-              // mark progress bar status
-              file.status = "fail";
-              file.res = err;
-            }
-          }
-        )
+      this.$store.dispatch('uploadFile',
+        {uploadUrl: this.uploadUrl, file});
     },
     remove(file) {
       // console.log("remove is called")

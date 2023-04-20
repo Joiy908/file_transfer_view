@@ -37,6 +37,61 @@ const actions = {
     }
     );
   },
+  uploadFile(context, {uploadUrl, file}) {
+    file.signal = axios.CancelToken.source();
+
+    // 1. prepare data
+    if (!file) {
+      return
+    }
+    const data = new FormData()
+    data.append("file", file.raw)
+
+    // 2. write onUploadProgress listener
+    const config = {
+      cancelToken: file.signal.token,
+      onUploadProgress: (progressEvent) => {
+        // use arrowFuc to share the 'this' of Vue
+        let totalLength = progressEvent.lengthComputable
+          ? progressEvent.total
+          : progressEvent.target.getResponseHeader("content-length") ||
+            progressEvent.target.getResponseHeader(
+              "x-decompressed-content-length"
+            )
+        // console.log("onUploadProgress", totalLength);
+        if (totalLength !== null) {
+          file.percentage = Math.round(
+            (progressEvent.loaded * 100) / totalLength
+          )
+          file.status = "uploading"
+        }
+      },
+    }
+
+    // 3. make request
+    axios.post(uploadUrl, data, config)
+    .then(
+      (res) => {
+        // use of arrow function
+        // will make arrowFun share the same this with parentFun
+        console.log('upload file ok! ', res.data);
+        // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
+        context.dispatch('refresh');
+        // mark progress bar status
+        file.status = "success";
+      },
+      (err) => {
+        if (axios.isCancel(err)) {
+          console.log('upload ' + file.name + ' canceled.');
+        } else {
+          console.log('upload file err! @@@', err.response.data);
+          // mark progress bar status
+          file.status = "fail";
+          file.res = err;
+        }
+      }
+    )
+  }
 };
 const mutations = {
   SETPATHOBJ(state, pathObj) {

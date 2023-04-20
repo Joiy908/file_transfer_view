@@ -4,7 +4,7 @@
     <!-- <DownloadTable v-on:changeDir="onChangeDir" :pleaseRefresh="pleaseRefresh"/> -->
     <DownloadTable/>
     <!-- Part II: upload file -->
-    <UploadFile :uploadDir="currDirPath" v-on:doRefresh="onDoRefresh"/>
+    <UploadFile/>
     <!-- Part III: dynamic message box -->
     <MsgBox></MsgBox>
   </div>
@@ -19,21 +19,6 @@ export default {
   name: 'App',
   components: {
     DownloadTable, UploadFile, MsgBox
-  },
-  data() {
-    return {
-      currDirPath: '',
-      // use new Date() as a refresh signal pass from UploadFile to DownLoadTable
-      pleaseRefresh: '',
-    }
-  },
-  methods: {
-    onChangeDir(val) {
-      this.currDirPath = val;
-    },
-    onDoRefresh() {
-      this.pleaseRefresh = new Date();
-    }
   },
 }
 </script>
