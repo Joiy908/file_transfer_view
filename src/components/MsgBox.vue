@@ -17,8 +17,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "MsgBox",
   data() {
@@ -28,30 +26,14 @@ export default {
     }
   },
   methods: {
-    getMsgs() {
-      axios.get('/messages').then(
-        res => {
-          console.log('get massages ok!', res.data);
-          this.messages = res.data.messages;
-          console.log('@@@', this.messages);
-        },
-        err => {
-          console.log('get massages err', err.message);
-        }
-      );
+    async getMsgs() {
+      const messages = await this.$store.dispatch('getMsgs');
+      if (messages !== null)
+        this.messages = messages;
     },
-    putMsg() {
-      let inputMsg = this.$refs.msgInput.value;
-      const data = {'msg': inputMsg};
-      axios.post('/messages', data).then(
-          res => {
-            console.log('post message ok! @@@', res.data);
-            this.getMsgs();
-          },
-          err => {
-            console.log('post message err @@@', err.response.data);
-          }
-      );
+    async putMsg() {
+      if(await this.$store.dispatch('putMsg', this.$refs.msgInput.value))
+        this.getMsgs();
     },
     // limitStrLen(str) {
     //   let N = 30;

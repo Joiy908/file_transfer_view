@@ -91,7 +91,28 @@ const actions = {
         }
       }
     )
-  }
+  },
+  async getMsgs() {
+    try {
+      const res = await axios.get('/messages')
+      console.log('get massages ok!', res.data);
+      return res.data.messages;
+    } catch (err) {
+      console.log('get massages err', err.message);
+      return null;
+    }
+  },
+  async putMsg(context, inputMsg) {
+    const data = {'msg': inputMsg};
+    try {
+      let res = await axios.post('/messages', data);
+      console.log('post message ok! @@@', res.data);
+      return true;
+    } catch (err) {
+      console.log('post message err @@@', err.response.data);
+      return false;
+    }
+  },
 };
 const mutations = {
   SETPATHOBJ(state, pathObj) {
