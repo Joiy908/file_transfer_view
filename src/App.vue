@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <!-- Part I: download file -->
-    <DownloadTable v-on:changeDir="onChangeDir" :pleaseRefresh="pleaseRefresh"/>
+    <!-- <DownloadTable v-on:changeDir="onChangeDir" :pleaseRefresh="pleaseRefresh"/> -->
+    <DownloadTable/>
     <!-- Part II: upload file -->
     <UploadFile :uploadDir="currDirPath" v-on:doRefresh="onDoRefresh"/>
     <!-- Part III: dynamic message box -->

@@ -34,49 +34,14 @@
 </template>
 
 <script>
-import axios from "axios";
-
+import {mapState, mapActions} from 'vuex'
 export default {
   name: "DownloadTable",
-  data() {
-    return {
-      pathTreeObj: {
-        currentDirName: './Test',
-        subFileList: ['demo.png'],
-        subFolderList: ['testDir']
-      },
-      ROOT_PATH: './files',
-    }
-  },
-  props: ['pleaseRefresh'],
-  watch: {
-    "pathTreeObj.currentDirName": {
-      handler(newValue) {
-        this.$emit('changeDir', newValue);
-      }
-    },
-    'pleaseRefresh': {
-      handler() {
-        // if pleaseRefresh is updated, do refresh
-        this.refresh();
-      }
-    }
+  computed:{
+      ...mapState(['pathTreeObj', 'ROOT_PATH']),
   },
   methods: {
-    getPathTreeObj(path) {
-      axios.get('path', {
-        params:{'dirPath': path}
-      })
-      .then(
-          res => {
-            console.log('get path ok!:', res.data);
-            this.pathTreeObj = res.data;
-          },
-          err => {
-            console.log('get path err:@@@', err.response.data);
-          }
-      );
-    },
+    ...mapActions(['getPathTreeObj', 'refresh', 'deleteFile']),
     backToParentDir() {
       if (this.pathTreeObj.currentDirName === this.ROOT_PATH) {
         return;
@@ -96,24 +61,6 @@ export default {
       let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
       return 'download?filePath=' + filePath;
     },
-    deleteFile(fileName) {
-      let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
-      axios.post('delete', null, {
-        params: {'filePath': filePath}
-      })
-      .then(
-      res => {
-          console.log('delete file ok! ', res.data);
-          this.refresh();
-      },
-      err => {
-          console.log('delete file err:@@@', err.response.data);
-      }
-      );
-    },
-    refresh() {
-      this.getPathTreeObj(this.pathTreeObj.currentDirName);
-    }
   },
   mounted() {
     this.getPathTreeObj(this.ROOT_PATH);

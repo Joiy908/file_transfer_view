@@ -13,6 +13,11 @@ module.exports = defineConfig({
         target: "http://127.0.0.1:8080",
         changeOrigin: true,
         logLevel: "debug"
+      },
+      '/messages': {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        logLevel: "debug"
       }
     }
   },
