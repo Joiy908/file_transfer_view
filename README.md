@@ -1,5 +1,3 @@
-
-
 # upload
 
 ## El-upload
@@ -356,6 +354,8 @@ todo: delete 之后还是 在上传。阻止一下。
 | /messages | POST   |                                  | `msg`, a string        |                                                              |
 
 > /delete  不用 RESTful api，delete 不如 get/post 兼容性强，事多！
+>
+> 有 http 安全性限制等。
 
 
 # messages
@@ -389,3 +389,9 @@ async function paste() {
    }
 }
 ```
+
+
+
+> 这个功能很鸡肋（于this project），应为只能在`https` or `http://localhost` 上用。
+>
+> 也就是只能 server 电脑用。（还是得通过loacl host 打开的）
