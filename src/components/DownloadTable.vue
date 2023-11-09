@@ -2,7 +2,6 @@
   <div>
     <h1>File to download</h1>
     Current dir: {{ pathTreeObj.currentDirName }}
-    <button @click="refresh()" class="u-right-margin-small">refresh</button>
     <button @click="backToParentDir()">back to parent dir</button>
     <br>
     <table>
@@ -35,13 +34,15 @@
 
 <script>
 import {mapState, mapActions} from 'vuex'
+
 export default {
   name: "DownloadTable",
   computed:{
       ...mapState(['pathTreeObj', 'ROOT_PATH']),
   },
   methods: {
-    ...mapActions(['getPathTreeObj', 'refresh', 'deleteFile']),
+    ...mapActions(['updatePathTreeObj', 'refresh', 'deleteFile']),
+
     backToParentDir() {
       if (this.pathTreeObj.currentDirName === this.ROOT_PATH) {
         return;
@@ -51,25 +52,21 @@ export default {
       pathArray.pop();
       let parentPath = pathArray.join('/')
       // jump to
-      this.getPathTreeObj(parentPath);
+      this.updatePathTreeObj(parentPath);
     },
+
     openDir(dirName) {
       let path = this.pathTreeObj.currentDirName + '/' + dirName;
-      this.getPathTreeObj(path);
+      this.updatePathTreeObj(path);
     },
+
     getDownloadUrl(fileName) {
       let filePath = this.pathTreeObj.currentDirName + '/' + fileName;
       return 'download?filePath=' + filePath;
     },
   },
   mounted() {
-    this.getPathTreeObj(this.ROOT_PATH);
+    this.updatePathTreeObj(this.ROOT_PATH);
   }
 }
 </script>
-
-<style>
-.u-right-margin-small {
-  margin-right: 1rem;
-}
-</style>

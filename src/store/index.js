@@ -4,24 +4,47 @@ import axios from 'axios'
 
 Vue.use(Vuex);
 
+
+const mutations = {
+  SET_PATHOBJ(state, pathObj) {
+    state.pathTreeObj = pathObj;
+  }
+};
+
+
+const state = {
+  pathTreeObj: {
+    currentDirName: './Test',
+    subFileList: ['demo.png'],
+    subFolderList: ['testDir']
+  },
+  ROOT_PATH: './files',
+};
+
+
 const actions = {
-  getPathTreeObj(context, path) {
+  updatePathTreeObj(context, path) {
+  /* Post: request pathTree and call the SET_PATHOBJ mutation
+   * if err: log the err
+  */
     axios.get('path', {
       params:{'dirPath': path}
     })
     .then(
         res => {
           console.log('get path ok!:', res.data);
-          context.commit('SETPATHOBJ', res.data);
+          context.commit('SET_PATHOBJ', res.data);
         },
         err => {
           console.log('get path err:@@@', err.response.data);
         }
     );
   },
+
   refresh(context) {
-    context.dispatch('getPathTreeObj', context.state.pathTreeObj.currentDirName)
+    context.dispatch('updatePathTreeObj', context.state.pathTreeObj.currentDirName)
   },
+
   deleteFile(context, fileName) {
     let filePath = context.state.pathTreeObj.currentDirName + '/' + fileName;
     axios.post('delete', null, {
@@ -37,7 +60,11 @@ const actions = {
     }
     );
   },
+
   uploadFile(context, {uploadUrl, file}) {
+    /**
+     * Post: update file and refresh path_tree
+     */
     file.signal = axios.CancelToken.source();
 
     // 1. prepare data
@@ -92,6 +119,7 @@ const actions = {
       }
     )
   },
+
   async getMsgs() {
     try {
       const res = await axios.get('/messages')
@@ -102,6 +130,7 @@ const actions = {
       return null;
     }
   },
+
   async putMsg(context, inputMsg) {
     const data = {'msg': inputMsg};
     try {
@@ -113,19 +142,6 @@ const actions = {
       return false;
     }
   },
-};
-const mutations = {
-  SETPATHOBJ(state, pathObj) {
-    state.pathTreeObj = pathObj;
-  }
-};
-const state = {
-  pathTreeObj: {
-    currentDirName: './Test',
-    subFileList: ['demo.png'],
-    subFolderList: ['testDir']
-  },
-  ROOT_PATH: './files',
 };
 
 
