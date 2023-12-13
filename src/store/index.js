@@ -8,6 +8,9 @@ Vue.use(Vuex);
 const mutations = {
   SET_PATHOBJ(state, pathObj) {
     state.pathTreeObj = pathObj;
+  },
+  SET_MSGS(state, msgs) {
+    state.msgs = msgs;
   }
 };
 
@@ -19,6 +22,7 @@ const state = {
     subFolderList: ['testDir']
   },
   ROOT_PATH: './files',
+  msgs: ['test message']
 };
 
 
@@ -31,13 +35,13 @@ const actions = {
       params:{'dirPath': path}
     })
     .then(
-        res => {
-          console.log('get path ok!:', res.data);
-          context.commit('SET_PATHOBJ', res.data);
-        },
-        err => {
-          console.log('get path err:@@@', err.response.data);
-        }
+      res => {
+        console.log('get path ok!:', res.data);
+        context.commit('SET_PATHOBJ', res.data);
+      },
+      err => {
+        console.log('get path err:@@@', err.response.data);
+      }
     );
   },
 
@@ -52,18 +56,22 @@ const actions = {
     })
     .then(
     res => {
-        console.log('delete file ok! ', res.data);
-        context.dispatch('refresh');
+      console.log('delete file ok! ', res.data);
+      context.dispatch('refresh');
     },
     err => {
-        console.log('delete file err:@@@', err.response.data);
+      console.log('delete file err:@@@', err.response.data);
+      console.log(err.response)
+      if (err.response.status === 403)
+        alert('Permission denied.')
     }
     );
   },
 
   uploadFile(context, {uploadUrl, file}) {
     /**
-     * Post: update file and refresh path_tree
+     * Post: update file,
+     * constantly refresh status and upload-progress of file 
      */
     file.signal = axios.CancelToken.source();
 
@@ -102,8 +110,6 @@ const actions = {
         // use of arrow function
         // will make arrowFun share the same this with parentFun
         console.log('upload file ok! ', res.data);
-        // tell DownloadTable to refresh by change the date of pleaseRefresh in vm
-        context.dispatch('refresh');
         // mark progress bar status
         file.status = "success";
       },
@@ -120,14 +126,19 @@ const actions = {
     )
   },
 
-  async getMsgs() {
+  async getMsgs(context) {
     try {
       const res = await axios.get('/messages')
       console.log('get massages ok!', res.data);
-      return res.data.messages;
+
+      /**get messages and replace '\n' to '<br>' */
+      let msgs = res.data.messages;
+      if (msgs !== null) {
+        msgs = msgs.map((s) => s.replace(/\n/g, '<br>'));
+        context.commit('SET_MSGS', msgs);
+      }
     } catch (err) {
       console.log('get massages err', err.message);
-      return null;
     }
   },
 

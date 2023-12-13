@@ -1,12 +1,14 @@
 import { io } from 'socket.io-client';
 import store from './store'
 
-const URL = undefined // undefined means get it by js 
-const socket = io(URL);
+const socket = io();
 
-socket.on('refresh', () => {
-  console.log('refresh msg gotten!');
+socket.on('refresh_path', () => {
   store.dispatch('refresh')
+});
+
+socket.on('refresh_msgs', () => {
+  store.dispatch('getMsgs')
 });
 
 export default socket;

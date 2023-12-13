@@ -40,14 +40,17 @@ export default {
   },
   methods: {
     onChange() {
+      /** push selected files to the uploadList, and clear the form*/
       let files = this.$refs.file.files
       for (let i = 0; i < files.length; i++) {
-        this.handleStart(files[i])
-        // console.log(files[i]);
+        this.init_and_push(files[i])
       }
       this.$refs.myForm.reset()
     },
-    handleStart(rawFile) {
+    init_and_push(rawFile) {
+      /** generate metainfo of file, then push it to uploadList
+       * file status: ready, uploading, success, fail
+      */
       rawFile.uid = Date.now() + this.tempIndex++;
       let file = {
         status: "ready",
@@ -60,21 +63,22 @@ export default {
       this.uploadList.push(file);
     },
     uploadAll() {
+      /** upload all 'ready' files*/
       let files = this.uploadList;
-      // console.log("uploadAll is called");
 
       for (let i = 0; i < files.length; i++) {
         if (files[i].status == "ready") this.post(files[i])
       }
     },
     post(file) {
+     /* Post: update file,
+        constantly refresh status and upload-progress of file */
       this.$store.dispatch('uploadFile',
         {uploadUrl: this.uploadUrl, file});
     },
     remove(file) {
-      // console.log("remove is called")
-      // console.log(file.uid);
-      file.signal.cancel('Request canceled by user.');
+      if (file.status === 'uploading')
+        file.signal.cancel('Request canceled by user.');
       let fileList = this.uploadList;
       fileList.splice(fileList.indexOf(file), 1)
     },
