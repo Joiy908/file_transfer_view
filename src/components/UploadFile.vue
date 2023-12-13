@@ -7,9 +7,9 @@
         type="file"
         multiple="multiple"
         @change="onChange"
-      /><br />
+      />
+      <button type="button" @click="uploadAll()">Upload</button>
     </form>
-    <button type="button" @click="uploadAll()">Upload</button>
     <div v-for="f in uploadList" :key="f.uid">
       file name: {{ f.name }}, status: {{ f.status }}, progress:
       {{ f.percentage }}, res: {{ f.res }}

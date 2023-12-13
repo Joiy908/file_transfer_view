@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <!-- Part I: download file -->
-    <!-- <DownloadTable v-on:changeDir="onChangeDir" :pleaseRefresh="pleaseRefresh"/> -->
     <DownloadTable/>
     <!-- Part II: upload file -->
     <UploadFile/>
